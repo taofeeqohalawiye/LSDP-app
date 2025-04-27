@@ -34,16 +34,19 @@ filtered_df = df[(df["TIMELINE"] == selected_timeline) & (df["LEAD MDA"] == sele
 st.subheader("Summary")
 initiative_counts = filtered_df["INITIATIVE TYPE"].value_counts()
 
-for initiative_type, count in initiative_counts.items():
-    st.markdown(f"- **{count} {initiative_type} initiatives**")
+if filtered_df.empty:
+    st.warning("No initiatives found for this combination.")
+else:
+    for initiative_type, count in initiative_counts.items():
+        st.markdown(f"- **{count} {initiative_type} initiatives**")
 
-# Grouped display using AgGrid with text wrap
-st.subheader("Grouped Initiatives Table")
-for initiative_type in filtered_df["INITIATIVE TYPE"].dropna().unique():
-    group_df = filtered_df[filtered_df["INITIATIVE TYPE"] == initiative_type]
-    with st.expander(f"{initiative_type} ({len(group_df)} initiatives)"):
-        gb = GridOptionsBuilder.from_dataframe(group_df)
-        gb.configure_default_column(wrapText=True, autoHeight=True)
-        gb.configure_pagination()
-        grid_options = gb.build()
-        AgGrid(group_df, gridOptions=grid_options, fit_columns_on_grid_load=True, height=300)
+    # Grouped display using AgGrid with text wrap
+    st.subheader("Grouped Initiatives Table")
+    for initiative_type in filtered_df["INITIATIVE TYPE"].dropna().unique():
+        group_df = filtered_df[filtered_df["INITIATIVE TYPE"] == initiative_type]
+        with st.expander(f"{initiative_type} ({len(group_df)} initiatives)"):
+            gb = GridOptionsBuilder.from_dataframe(group_df)
+            gb.configure_default_column(wrapText=True, autoHeight=True)
+            gb.configure_pagination()
+            grid_options = gb.build()
+            AgGrid(group_df, gridOptions=grid_options, fit_columns_on_grid_load=True, height=300)
