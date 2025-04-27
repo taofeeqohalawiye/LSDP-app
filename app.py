@@ -19,6 +19,11 @@ with col1:
 with col2:
     st.title("LSDP Initiatives Explorer")
 
+# Preview raw structure for debug
+with st.expander("Preview data structure"):
+    st.dataframe(df.head())
+    st.code(f"Columns: {list(df.columns)}")
+
 # Filters
 timeline_options = df["TIMELINE"].dropna().unique()
 mda_options = df["LEAD MDA"].dropna().unique()
@@ -35,10 +40,10 @@ if search_term and "INITIATIVES" in filtered_df.columns:
 
 # Summary
 st.subheader("Summary")
-initiative_counts = filtered_df["INITIATIVE TYPE"].value_counts()
 if filtered_df.empty:
     st.warning("No initiatives found for this combination.")
 else:
+    initiative_counts = filtered_df["INITIATIVE TYPE"].value_counts()
     for initiative_type, count in initiative_counts.items():
         st.markdown(f"- **{count} {initiative_type} initiatives**")
 
@@ -51,13 +56,13 @@ else:
         return output
 
     st.download_button(
-        label="Download all filtered data as Excel",
+        label="Download filtered data as Excel",
         data=convert_df_to_excel(filtered_df),
         file_name="filtered_initiatives.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
 
-    # Grouped tables
+    # Grouped display using AgGrid with text wrap
     st.subheader("Grouped Initiatives Table")
     for initiative_type in filtered_df["INITIATIVE TYPE"].dropna().unique():
         group_df = filtered_df[filtered_df["INITIATIVE TYPE"] == initiative_type]
