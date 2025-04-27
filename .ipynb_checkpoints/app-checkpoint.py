@@ -24,8 +24,8 @@ with col2:
 # Filters
 selected_timeline = st.selectbox("Select Timeline", sorted(df["TIMELINE"].dropna().unique()))
 selected_mda = st.selectbox("Select Lead MDA", sorted(df["LEAD MDA"].dropna().unique()))
-focus_area_filter = st.multiselect("Filter by Focus Area", sorted(df["FOCUS AREA"].dropna().unique()))
 initiative_type_filter = st.multiselect("Filter by Initiative Type", sorted(df["INITIATIVE TYPE"].dropna().unique()))
+focus_area_filter = st.multiselect("Filter by Focus Area to see KPIs", sorted(df["FOCUS AREA"].dropna().unique()))
 search_term = st.text_input("Search Initiatives (keywords):")
 
 # Apply filters
