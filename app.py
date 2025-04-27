@@ -2,15 +2,15 @@
 import streamlit as st
 import pandas as pd
 
+# Page config
+st.set_page_config(page_title="LSDP Initiatives Explorer", layout="wide")
+
 # Load data
 @st.cache_data
 def load_data():
     return pd.read_excel("lsdp_initiatives.xlsx")
 
 df = load_data()
-
-# Page config
-st.set_page_config(page_title="LSDP Initiatives Explorer", layout="wide")
 
 # Header with Lagos logo
 col1, col2 = st.columns([1, 12])
