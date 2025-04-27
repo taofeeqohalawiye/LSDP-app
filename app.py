@@ -1,8 +1,9 @@
 
 import streamlit as st
 import pandas as pd
+from st_aggrid import AgGrid, GridOptionsBuilder
 
-# Page config
+# Set page config early
 st.set_page_config(page_title="LSDP Initiatives Explorer", layout="wide")
 
 # Load data
@@ -36,9 +37,13 @@ initiative_counts = filtered_df["INITIATIVE TYPE"].value_counts()
 for initiative_type, count in initiative_counts.items():
     st.markdown(f"- **{count} {initiative_type} initiatives**")
 
-# Grouped display by initiative type
+# Grouped display using AgGrid with text wrap
 st.subheader("Grouped Initiatives Table")
 for initiative_type in filtered_df["INITIATIVE TYPE"].dropna().unique():
     group_df = filtered_df[filtered_df["INITIATIVE TYPE"] == initiative_type]
     with st.expander(f"{initiative_type} ({len(group_df)} initiatives)"):
-        st.dataframe(group_df.reset_index(drop=True))
+        gb = GridOptionsBuilder.from_dataframe(group_df)
+        gb.configure_default_column(wrapText=True, autoHeight=True)
+        gb.configure_pagination()
+        grid_options = gb.build()
+        AgGrid(group_df, gridOptions=grid_options, fit_columns_on_grid_load=True, height=300)
