@@ -21,6 +21,17 @@ with col1:
 with col2:
     st.title("LSDP 2052 Initiatives Explorer")
 
+# Vision
+st.markdown("### Vision")
+st.markdown("*To become Africa’s model megacity — a global economic hub that is safe, secure, functional, and productive.*")
+
+# LSDP Essence
+st.markdown("### LSDP 2052 – Essence")
+st.markdown("*The Lagos State Development Plan (LSDP) 2052 is a comprehensive 30-year blueprint guiding the state's transformation into a globally competitive megacity. Anchored on four strategic pillars — Thriving Economy, Human-centric City, Modern Infrastructure, and Effective Governance — it outlines 447 strategic initiatives aimed at fostering inclusive prosperity, resilience, and innovation across all sectors.*")
+
+# Tagline
+st.markdown("#### _A 30-Year Blueprint for Prosperity and Innovation_")
+
 # Filters
 selected_timeline = st.selectbox("Select Timeline", sorted(df["TIMELINE"].dropna().unique()))
 selected_mda = st.selectbox("Select Lead MDA", sorted(df["LEAD MDA"].dropna().unique()))
@@ -58,7 +69,10 @@ if not filtered_df.empty:
     gb.configure_default_column(wrapText=True, autoHeight=True)
     gb.configure_pagination()
     grid_options = gb.build()
-    AgGrid(filtered_df, gridOptions=grid_options, fit_columns_on_grid_load=True, height=1000)
+    if st.session_state.get("device", "desktop") == "mobile":
+        st.dataframe(filtered_df, use_container_width=True)
+    else:
+        AgGrid(filtered_df, gridOptions=grid_options, fit_columns_on_grid_load=True, height=1000)
 else:
     st.warning("No initiatives found for the selected filters.")
 
@@ -66,9 +80,9 @@ else:
 mda_focus_areas = base_df["FOCUS AREA"].dropna().unique()
 st.subheader("KPIs Linked to Selected MDA")
 for fa in mda_focus_areas:
-    kpis = kpi_df[kpi_df["FOCUS AREA"].str.strip() == fa.strip()]["KPI"].dropna().tolist()
+    kpis = kpi_df[kpi_df["FOCUS AREA"] == fa]["KPI"].dropna().tolist()
     if kpis:
-        focus_area = focus_area.strip()
         st.markdown(f"**Focus Area: {fa}**")
         for kpi in kpis:
             st.markdown(f"- {kpi}")
+
