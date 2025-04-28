@@ -33,10 +33,10 @@ st.markdown("*The Lagos State Development Plan (LSDP) 2052 is a comprehensive 30
 st.markdown("#### _A 30-Year Blueprint for Prosperity and Innovation_")
 
 # Filters
-selected_timeline = st.selectbox("Select Timeline", sorted(df["TIMELINE"].dropna().unique()))
-selected_mda = st.selectbox("Select Lead MDA", sorted(df["LEAD MDA"].dropna().unique()))
+selected_timeline = st.multiselect("Select Timeline", sorted(df["TIMELINE"].dropna().unique()))
+selected_mda = st.multiselect("Select Lead MDA", sorted(df["LEAD MDA"].dropna().unique()))
 
-base_df = df[(df["TIMELINE"] == selected_timeline) & (df["LEAD MDA"] == selected_mda)]
+base_df = df[(df["TIMELINE"].isin(selected_timeline)) & (df["LEAD MDA"].isin(selected_mda))]
 
 available_focus_areas = sorted(base_df["FOCUS AREA"].dropna().unique())
 available_initiative_types = sorted(base_df["INITIATIVE TYPE"].dropna().unique())
