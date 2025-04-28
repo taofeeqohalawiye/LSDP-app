@@ -14,7 +14,7 @@ def load_data():
 
 df, kpi_df = load_data()
 
-# Header with logo
+# Header
 col1, col2 = st.columns([1, 12])
 with col1:
     st.image("lagos_logo.png", width=80)
@@ -24,12 +24,20 @@ with col2:
 # Filters
 selected_timeline = st.selectbox("Select Timeline", sorted(df["TIMELINE"].dropna().unique()))
 selected_mda = st.selectbox("Select Lead MDA", sorted(df["LEAD MDA"].dropna().unique()))
-initiative_type_filter = st.multiselect("Filter by Initiative Type", sorted(df["INITIATIVE TYPE"].dropna().unique()))
-focus_area_filter = st.multiselect("Filter by Focus Area to see KPIs", sorted(df["FOCUS AREA"].dropna().unique()))
+
+# Filter base data by MDA and Timeline
+base_df = df[(df["TIMELINE"] == selected_timeline) & (df["LEAD MDA"] == selected_mda)]
+
+# Dynamic slicers based on MDA context
+available_focus_areas = sorted(base_df["FOCUS AREA"].dropna().unique())
+available_initiative_types = sorted(base_df["INITIATIVE TYPE"].dropna().unique())
+
+focus_area_filter = st.multiselect("Filter by Focus Area", options=available_focus_areas)
+initiative_type_filter = st.multiselect("Filter by Initiative Type", options=available_initiative_types)
 search_term = st.text_input("Search Initiatives (keywords):")
 
-# Apply filters
-filtered_df = df[(df["TIMELINE"] == selected_timeline) & (df["LEAD MDA"] == selected_mda)]
+# Apply all filters
+filtered_df = base_df.copy()
 if focus_area_filter:
     filtered_df = filtered_df[filtered_df["FOCUS AREA"].isin(focus_area_filter)]
 if initiative_type_filter:
@@ -43,7 +51,7 @@ initiative_counts = filtered_df["INITIATIVE TYPE"].value_counts()
 for initiative_type, count in initiative_counts.items():
     st.markdown(f"- **{count} {initiative_type} initiatives**")
 
-# AgGrid table for filtered initiatives
+# Show initiative table
 if not filtered_df.empty:
     st.subheader("Initiatives Table")
     gb = GridOptionsBuilder.from_dataframe(filtered_df)
@@ -54,11 +62,13 @@ if not filtered_df.empty:
 else:
     st.warning("No initiatives found for the selected filters.")
 
-# KPI card section
-if focus_area_filter:
-    for focus_area in focus_area_filter:
-        kpis = kpi_df[kpi_df["FOCUS AREA"] == focus_area]["KPI"].dropna().tolist()
-        if kpis:
-            st.markdown(f"### KPIs for Focus Area: {focus_area}")
-            for kpi in kpis:
-                st.markdown(f"- {kpi}")
+# Show all KPIs applicable to MDA's focus areas
+mda_focus_areas = base_df["FOCUS AREA"].dropna().unique()
+st.subheader("KPIs Linked to Selected MDA")
+for fa in mda_focus_areas:
+    kpis = kpi_df[kpi_df["FOCUS AREA"].str.strip() == fa.strip()]["KPI"].dropna().tolist()
+    if kpis:
+        focus_area = focus_area.strip()
+        st.markdown(f"**Focus Area: {fa}**")
+        for kpi in kpis:
+            st.markdown(f"- {kpi}")

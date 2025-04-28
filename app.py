@@ -21,53 +21,15 @@ with col1:
 with col2:
     st.title("LSDP 2052 Initiatives Explorer")
 
-# Filters
-selected_timeline = st.selectbox("Select Timeline", sorted(df["TIMELINE"].dropna().unique()))
-selected_mda = st.selectbox("Select Lead MDA", sorted(df["LEAD MDA"].dropna().unique()))
+# Vision
+st.markdown("### Vision")
+st.markdown("*To become Africa’s model megacity — a global economic hub that is safe, secure, functional, and productive.*")
 
-# Filter base data by MDA and Timeline
-base_df = df[(df["TIMELINE"] == selected_timeline) & (df["LEAD MDA"] == selected_mda)]
+# LSDP Essence
+st.markdown("### LSDP 2052 – Essence")
+st.markdown("*The Lagos State Development Plan (LSDP) 2052 is a comprehensive 30-year blueprint guiding the state's transformation into a globally competitive megacity. Anchored on four strategic pillars — Thriving Economy, Human-centric City, Modern Infrastructure, and Effective Governance — it outlines 447 strategic initiatives aimed at fostering inclusive prosperity, resilience, and innovation across all sectors.*")
 
-# Dynamic slicers based on MDA context
-available_focus_areas = sorted(base_df["FOCUS AREA"].dropna().unique())
-available_initiative_types = sorted(base_df["INITIATIVE TYPE"].dropna().unique())
+# Tagline
+st.markdown("#### _A 30-Year Blueprint for Prosperity and Innovation_")
 
-focus_area_filter = st.multiselect("Filter by Focus Area", options=available_focus_areas)
-initiative_type_filter = st.multiselect("Filter by Initiative Type", options=available_initiative_types)
-search_term = st.text_input("Search Initiatives (keywords):")
-
-# Apply all filters
-filtered_df = base_df.copy()
-if focus_area_filter:
-    filtered_df = filtered_df[filtered_df["FOCUS AREA"].isin(focus_area_filter)]
-if initiative_type_filter:
-    filtered_df = filtered_df[filtered_df["INITIATIVE TYPE"].isin(initiative_type_filter)]
-if search_term:
-    filtered_df = filtered_df[filtered_df["INITIATIVES"].str.contains(search_term, case=False, na=False)]
-
-# Summary
-st.subheader("Summary")
-initiative_counts = filtered_df["INITIATIVE TYPE"].value_counts()
-for initiative_type, count in initiative_counts.items():
-    st.markdown(f"- **{count} {initiative_type} initiatives**")
-
-# Show initiative table
-if not filtered_df.empty:
-    st.subheader("Initiatives Table")
-    gb = GridOptionsBuilder.from_dataframe(filtered_df)
-    gb.configure_default_column(wrapText=True, autoHeight=True)
-    gb.configure_pagination()
-    grid_options = gb.build()
-    AgGrid(filtered_df, gridOptions=grid_options, fit_columns_on_grid_load=True, height=1000)
-else:
-    st.warning("No initiatives found for the selected filters.")
-
-# Show all KPIs applicable to MDA's focus areas
-mda_focus_areas = base_df["FOCUS AREA"].dropna().unique()
-st.subheader("KPIs Linked to Selected MDA")
-for fa in mda_focus_areas:
-    kpis = kpi_df[kpi_df["FOCUS AREA"] == fa]["KPI"].dropna().tolist()
-    if kpis:
-        st.markdown(f"**Focus Area: {fa}**")
-        for kpi in kpis:
-            st.markdown(f"- {kpi}")
+# Continue with filters and table logic...
